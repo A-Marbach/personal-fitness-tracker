@@ -1,0 +1,37 @@
+
+---
+- name: Harden SSH configuration
+  hosts: fitness_servers
+  become: true
+
+  tasks:
+    - name: Ensure OpenSSH server is installed
+      ansible.builtin.apt:
+        name: openssh-server
+        state: present
+
+    - name: Configure SSH hardening
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/00-fitness-hardening.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          PermitRootLogin no
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication yes
+          PermitEmptyPasswords no
+          X11Forwarding no
+      notify: Reload SSH
+
+    - name: Validate complete SSH configuration
+      ansible.builtin.command:
+        cmd: /usr/sbin/sshd -t
+      changed_when: false
+
+  handlers:
+    - name: Reload SSH
+      ansible.builtin.service:
+        name: ssh
+        state: reloaded
