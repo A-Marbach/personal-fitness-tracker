@@ -1,0 +1,9 @@
+all:
+  children:
+    fitness_servers:
+      hosts:
+        fitness-prod:
+          ansible_host: 91.99.88.215
+          ansible_user: deploy
+          ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+          ansible_python_interpreter: /usr/bin/python3
