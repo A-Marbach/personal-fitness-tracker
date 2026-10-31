@@ -1,0 +1,232 @@
+
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="brand">
+      <div class="brand-icon">F</div>
+      <span>FITNESS TRACKER</span>
+    </div>
+
+    <div class="header-content">
+      <div>
+        <p class="eyebrow">DEIN PERSÖNLICHER FORTSCHRITT</p>
+        <h1>Mein Dashboard<span class="accent">.</span></h1>
+        <p class="header-description">
+          Jeder Fortschritt zählt. Behalte deine Entwicklung im Blick.
+        </p>
+      </div>
+
+      <div class="status">
+        <span class="status-dot"></span>
+        Dein persönlicher Bereich
+      </div>
+    </div>
+  </header>
+
+  <main>
+    @if (loading()) {
+      <div class="message-card">
+        <p>Daten werden geladen...</p>
+      </div>
+    } @else {
+      <section class="overview-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ÜBERSICHT</p>
+            <h2>Deine aktuellen Werte</h2>
+          </div>
+          <span class="section-hint">Letzte Einträge</span>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card weight-card">
+            <div class="stat-top">
+              <span class="stat-icon weight-icon">⚖</span>
+              <span class="stat-tag">GEWICHT</span>
+            </div>
+
+            <div class="stat-content">
+              <span class="stat-label">Körpergewicht</span>
+              <div class="stat-value">
+                @if (weight() !== null) {
+                  {{ weight() }}
+                  <span class="stat-unit">kg</span>
+                } @else {
+                  –
+                }
+              </div>
+              <p class="stat-footer">Letzte Gewichtsmessung</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon pull-icon">↑</span>
+              <span class="stat-tag">KRAFT</span>
+            </div>
+
+            <div class="stat-content">
+              <span class="stat-label">Klimmzüge</span>
+              <div class="stat-value">
+                {{ pullUps() ?? '–' }}
+                <span class="stat-unit">Wdh.</span>
+              </div>
+              <p class="stat-footer">Letzter Trainingseintrag</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon push-icon">↗</span>
+              <span class="stat-tag">KRAFT</span>
+            </div>
+
+            <div class="stat-content">
+              <span class="stat-label">Liegestütze</span>
+              <div class="stat-value">
+                {{ pushUps() ?? '–' }}
+                <span class="stat-unit">Wdh.</span>
+              </div>
+              <p class="stat-footer">Letzter Trainingseintrag</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="entry-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">TÄGLICHES TRACKING</p>
+            <h2>Heutige Werte eintragen</h2>
+            <p>Erfasse deine Fortschritte mit wenigen Klicks.</p>
+          </div>
+
+          <div class="entry-icon">✎</div>
+        </div>
+
+        <form (ngSubmit)="saveValues()">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="weight">Gewicht</label>
+              <div class="input-wrapper">
+                <input
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max="999.99"
+                  placeholder="110.0"
+                  [(ngModel)]="inputWeight"
+                  required
+                />
+                <span>kg</span>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="pullUps">Klimmzüge</label>
+              <div class="input-wrapper">
+                <input
+                  id="pullUps"
+                  name="pullUps"
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="0"
+                  [(ngModel)]="inputPullUps"
+                  required
+                />
+                <span>Wdh.</span>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="pushUps">Liegestütze</label>
+              <div class="input-wrapper">
+                <input
+                  id="pushUps"
+                  name="pushUps"
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="0"
+                  [(ngModel)]="inputPushUps"
+                  required
+                />
+                <span>Wdh.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <span class="auto-date">
+              <span class="auto-date-dot"></span>
+              Datum wird automatisch erfasst
+            </span>
+
+            <button
+              type="submit"
+              [disabled]="saving() || loading()"
+            >
+              {{ saving() ? 'Wird gespeichert...' : 'Werte speichern' }}
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </form>
+
+        @if (success()) {
+          <p class="success-message" role="status">
+            {{ success() }}
+          </p>
+        }
+
+        @if (error()) {
+          <p class="error-message" role="alert">
+            {{ error() }}
+          </p>
+        }
+      </section>
+    }
+
+    
+     
+<section class="progress-card">
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">ANALYSE</p>
+      <h2>Deine Fortschritte</h2>
+      <p>Deine Entwicklung im Laufe der Zeit.</p>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <app-progress-chart
+      title="Gewichtsentwicklung"
+      unit="kg"
+      color="#60a5fa"
+      [points]="weightChart()"
+    />
+
+    <app-progress-chart
+      title="Klimmzüge"
+      unit="Wdh."
+      color="#a5b4fc"
+      [points]="pullUpsChart()"
+    />
+
+    <app-progress-chart
+      title="Liegestütze"
+      unit="Wdh."
+      color="#5eead4"
+      [points]="pushUpsChart()"
+    />
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="dashboard-footer">
+    Personal Fitness Tracker · Dein Fortschritt, dein Tempo.
+  </footer>
+</div>
