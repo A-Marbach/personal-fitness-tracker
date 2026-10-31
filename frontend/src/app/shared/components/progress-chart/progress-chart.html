@@ -1,0 +1,19 @@
+
+<div class="progress-chart">
+  <h3>{{ title() }}</h3>
+
+  @if (points().length > 0) {
+    <div class="chart-container">
+      <canvas
+        baseChart
+        [data]="chartData()"
+        [options]="chartOptions()"
+        [type]="'line'"
+      ></canvas>
+    </div>
+  } @else {
+    <div class="empty-state">
+      Noch keine Einträge vorhanden.
+    </div>
+  }
+</div>
